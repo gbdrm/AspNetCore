@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Models;
 
@@ -14,6 +10,11 @@ namespace AspNetCore.Data
             : base(options)
         {
         }
+
+        public DbSet<TestPackage> TestPackages { get; set; }
+        public DbSet<TestResult> TestResults { get; set; }
+        public DbSet<TestItem> TestItems { get; set; }
+        public DbSet<TestOption> TestOptions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
