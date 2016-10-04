@@ -1,15 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace AspNetCore.Models
 {
     public class TestItem
     {
         public Guid TestItemId { get; set; }
+        [Display(Name = "Вопрос")]
         public string Question { get; set; }
+        [Display(Name = "Ответ")]
         public string Answer { get; set; }
+        [Display(Name = "Тип ответа")]
         public TestType TestType { get; set; }
 
+        [Display(Name = "Имя теста")]
         public Guid TestPackageId { get; set; }
         public virtual TestPackage TestPackage { get; set; }
 
@@ -18,7 +23,7 @@ namespace AspNetCore.Models
 
     public enum TestType
     {
-        TextAnswer,
+        Text,
         OneOption, // radio box
         FewOptions, // check boxes
     }

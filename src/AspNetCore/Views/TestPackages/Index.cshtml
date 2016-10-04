@@ -1,53 +1,76 @@
-@model IEnumerable<AspNetCore.Models.TestPackage>
+﻿@model IEnumerable<AspNetCore.Models.TestsViewModels.TestPackagesViewModel>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Тесты";
 }
 
-<h2>Index</h2>
+<h2>Тесты</h2>
 
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TimeCreated)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.UserId)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Viewed)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TimeCreated)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.UserId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Viewed)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.TestPackageId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.TestPackageId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.TestPackageId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+<p>
+    @if (Model != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TestPackage.Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TestPackage.Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TestPackage.TimeCreated)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.TestPackage.TestItems)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TestPackage.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TestPackage.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TestPackage.TimeCreated)
+                        </td>
+                        <td>
+                            @foreach (TestItem test in item.TestItems)
+                            {
+                                if (test.TestPackageId == item.TestPackage.TestPackageId)
+                                {
+                                    <div>
+                                            @(test.Question.Length > 21 ? test.Question.Substring(0, 20) + "..." : test.Question)
+                                    </div>
+
+                                }
+                            }
+                            <a asp-controller="TestItems" asp-action="Index" asp-route-id="@item.TestPackage.TestPackageId">Edit</a>
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.TestPackage.TestPackageId">Edit</a> |
+                            <a asp-action="Details" asp-route-id="@item.TestPackage.TestPackageId">Details</a> |
+                            <a asp-action="Delete" asp-route-id="@item.TestPackage.TestPackageId">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <text>?? ??? ?? ??????? ?? ?????? ?????</text>
+        <br />
+        <br />
+        <a href="~/testpackage/create" class="btn btn-primary">???????!</a>
+    }
+</p>

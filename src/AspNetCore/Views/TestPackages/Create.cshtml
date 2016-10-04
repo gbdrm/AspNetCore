@@ -12,31 +12,17 @@
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group">
+            <label asp-for="Name" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
             <label asp-for="Description" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <input asp-for="Description" class="form-control" />
                 <span asp-validation-for="Description" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="TimeCreated" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="TimeCreated" class="form-control" />
-                <span asp-validation-for="TimeCreated" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="UserId" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="UserId" class="form-control" />
-                <span asp-validation-for="UserId" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Viewed" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Viewed" class="form-control" />
-                <span asp-validation-for="Viewed" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
@@ -47,9 +33,6 @@
     </div>
 </form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -1,0 +1,22 @@
+﻿@model IList<AspNetCore.Models.TestPackage>
+    
+<h2>Мои тесты</h2>
+
+<p>
+    @if (Model != null && Model.Count != 0)
+    {
+        foreach (TestPackage result in Model)
+        {
+            <div>
+                <a asp-controller="TestPackages" asp-action="Edit" asp-route-id="@result.TestPackageId">@result.Name</a>
+            </div>
+        }
+    }
+    else
+    {
+        <text>Вы еще не создали ни одного теста</text>
+        <br/>
+        <br />
+        <a href="~/testpackage/create" class="btn btn-primary">Создать!</a>
+    }
+</p>

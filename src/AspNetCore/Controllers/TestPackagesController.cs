@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Data;
 using AspNetCore.Models;
+using AspNetCore.Models.TestsViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AspNetCore.Controllers
 {
+    [Authorize]
     public class TestPackagesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,10 +22,47 @@ namespace AspNetCore.Controllers
             _context = context;    
         }
 
-        // GET: TestPackages
-        public async Task<IActionResult> Index()
+        public IActionResult Finished()
         {
-            return View(await _context.TestPackages.ToListAsync());
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId;
+            if (Guid.TryParse(user, out userId))
+            {
+                var model = _context.TestResults.Where(r => r.UserId == userId);
+                return View(model.ToList());
+            }
+
+            return View();
+        }
+
+        public IActionResult Index()
+        {
+            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            Guid userId;
+            if (Guid.TryParse(user, out userId))
+            {
+                var packages = _context.TestPackages.Where(r => r.UserId == userId);
+                var model = GetPackagesModel(packages);
+
+                return View(model);
+            }
+
+            return View();
+        }
+
+        private IEnumerable<TestPackagesViewModel> GetPackagesModel(IQueryable<TestPackage> packages)
+        {
+            foreach (var testPackage in packages)
+            {
+                var tests = _context.TestItems.Where(i => i.TestPackageId == testPackage.TestPackageId);
+                TestPackagesViewModel modelItem = new TestPackagesViewModel
+                {
+                    TestItems = tests,
+                    TestPackage = testPackage
+                };
+
+                yield return modelItem;
+            }
         }
 
         // GET: TestPackages/Details/5
@@ -53,11 +93,19 @@ namespace AspNetCore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TestPackageId,Description,TimeCreated,UserId,Viewed")] TestPackage testPackage)
+        public async Task<IActionResult> Create([Bind("Name,Description")] TestPackage testPackage)
         {
             if (ModelState.IsValid)
             {
                 testPackage.TestPackageId = Guid.NewGuid();
+                testPackage.TimeCreated = DateTime.Now;
+                var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                Guid userId;
+                if (Guid.TryParse(user, out userId))
+                {
+                    testPackage.UserId = userId;
+                }
+                
                 _context.Add(testPackage);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
@@ -86,7 +134,7 @@ namespace AspNetCore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("TestPackageId,Description,TimeCreated,UserId,Viewed")] TestPackage testPackage)
+        public async Task<IActionResult> Edit(Guid id, [Bind("TestPackageId,Name,Description")] TestPackage testPackage)
         {
             if (id != testPackage.TestPackageId)
             {
@@ -97,7 +145,9 @@ namespace AspNetCore.Controllers
             {
                 try
                 {
-                    _context.Update(testPackage);
+                    _context.TestPackages.Attach(testPackage);
+                    _context.Entry(testPackage).Property(p => p.Name).IsModified = true;
+                    _context.Entry(testPackage).Property(p => p.Description).IsModified = true;
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)

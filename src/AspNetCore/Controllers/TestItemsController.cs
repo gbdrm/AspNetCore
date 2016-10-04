@@ -7,23 +7,34 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Data;
 using AspNetCore.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AspNetCore.Controllers
 {
+    [Authorize]
     public class TestItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
 
         public TestItemsController(ApplicationDbContext context)
         {
-            _context = context;    
+            _context = context;
         }
 
         // GET: TestItems
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid? id)
         {
-            var applicationDbContext = _context.TestItems.Include(t => t.TestPackage);
-            return View(await applicationDbContext.ToListAsync());
+            if (id == null)
+            {
+                var applicationDbContext = _context.TestItems.Include(t => t.TestPackage);
+                return View(await applicationDbContext.ToListAsync());
+            }
+            else
+            {
+                ViewData["ReturnUrl"] = "TestItems/Index/" + id; // TODO: Make it better
+                var applicationDbContext = _context.TestItems.Where(p => p.TestPackageId == id).Include(t => t.TestPackage);
+                return View(await applicationDbContext.ToListAsync());
+            }
         }
 
         // GET: TestItems/Details/5
@@ -46,7 +57,8 @@ namespace AspNetCore.Controllers
         // GET: TestItems/Create
         public IActionResult Create()
         {
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "TestPackageId");
+            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name");
+            ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View();
         }
 
@@ -64,7 +76,8 @@ namespace AspNetCore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "TestPackageId", testItem.TestPackageId);
+            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name", testItem.TestPackageId);
+            ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View(testItem);
         }
 
@@ -81,7 +94,8 @@ namespace AspNetCore.Controllers
             {
                 return NotFound();
             }
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "TestPackageId", testItem.TestPackageId);
+            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name", testItem.TestPackageId);
+            ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View(testItem);
         }
 
@@ -117,7 +131,8 @@ namespace AspNetCore.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "TestPackageId", testItem.TestPackageId);
+            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name", testItem.TestPackageId);
+            ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View(testItem);
         }
 
@@ -153,5 +168,6 @@ namespace AspNetCore.Controllers
         {
             return _context.TestItems.Any(e => e.TestItemId == id);
         }
+
     }
 }

@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Data;
 using AspNetCore.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AspNetCore.Controllers
 {
+    [Authorize]
     public class TestOptionsController : Controller
     {
         private readonly ApplicationDbContext _context;
