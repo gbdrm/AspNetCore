@@ -1,10 +1,12 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AspNetCore.Models;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace AspNetCore.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole<Guid>, Guid>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -18,10 +20,13 @@ namespace AspNetCore.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<TestResult>()
+            .HasOne(p => p.User)
+            .WithMany(b => b.Testresults)
+            .IsRequired()
+            .OnDelete(DeleteBehavior.Restrict);
+
             base.OnModelCreating(builder);
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
         }
     }
 }

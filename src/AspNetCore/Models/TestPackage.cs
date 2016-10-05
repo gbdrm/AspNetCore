@@ -8,8 +8,10 @@ namespace AspNetCore.Models
     {
         public Guid TestPackageId { get; set; }
         [Display(Name = "Название теста")]
+        [MaxLength(40)]
         public string Name { get; set; }
         [Display(Name = "Описание")]
+        [MaxLength(100)]
         public string Description { get; set; }
         [Display(Name = "Создан")]
         public DateTime TimeCreated { get; set; }

@@ -8,6 +8,7 @@ namespace AspNetCore.Models
     {
         public Guid TestItemId { get; set; }
         [Display(Name = "Вопрос")]
+        [DataType(DataType.MultilineText)]
         public string Question { get; set; }
         [Display(Name = "Ответ")]
         public string Answer { get; set; }

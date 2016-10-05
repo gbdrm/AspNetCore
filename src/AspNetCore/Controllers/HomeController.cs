@@ -4,6 +4,7 @@ using System.Security.Claims;
 using AspNetCore.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace AspNetCore.Controllers
 {
@@ -18,7 +19,9 @@ namespace AspNetCore.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            var model = _db.TestPackages.OrderBy(p=>p.TimeCreated).Include(p => p.User);
+            
+            return View(model);
         }
 
         public IActionResult About()

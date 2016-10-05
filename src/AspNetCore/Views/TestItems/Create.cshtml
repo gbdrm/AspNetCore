@@ -11,20 +11,7 @@
         <h4>TestItem</h4>
         <hr />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-group">
-            <label asp-for="Answer" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Answer" class="form-control" />
-                <span asp-validation-for="Answer" class="text-danger" />
-            </div>
-        </div>
-        <div class="form-group">
-            <label asp-for="Question" class="col-md-2 control-label"></label>
-            <div class="col-md-10">
-                <input asp-for="Question" class="form-control" />
-                <span asp-validation-for="Question" class="text-danger" />
-            </div>
-        </div>
+        
         <div class="form-group">
             <label asp-for="TestPackageId" class="col-md-2 control-label"></label>
             <div class="col-md-10">
@@ -32,10 +19,17 @@
             </div>
         </div>
         <div class="form-group">
-            <label asp-for="TestType" class="col-md-2 control-label"></label>
+            <label asp-for="Question" class="col-md-2 control-label"></label>
             <div class="col-md-10">
-                <select asp-for="TestType" class="form-control" asp-items="ViewBag.TestTypes"></select>
-                <span asp-validation-for="TestType" class="text-danger" />
+                <textarea asp-for="Question" class="form-control"></textarea>
+                <span asp-validation-for="Question" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Answer" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Answer" class="form-control" />
+                <span asp-validation-for="Answer" class="text-danger" />
             </div>
         </div>
         <div class="form-group">
