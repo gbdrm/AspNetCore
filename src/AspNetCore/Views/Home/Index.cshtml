@@ -8,7 +8,7 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-12">
-            <h3>Тесты</h3>
+            <h3>Все Тесты</h3>
         </div>
     </div>
     
@@ -27,13 +27,15 @@
                 }
                 <div class="caption">
                     <h3>@package.Name</h3>
-                    Автор 
-                    <a style="color: grey;">@package.User.UserName</a>
+                    Автор  <b>@package.User.UserName</b>
+                    <br/>
+                    Вопросов  <b>@package.TestItems.Count</b>
+                    <br /><br />
                     <p>@package.Description</p>
                     <p>
-                        <a href="~/test/start/@package.TestPackageId" class="btn btn-primary">Начать!</a>
+                        <a href="~/test/index/?gameId=@package.TestPackageId" class="btn btn-primary">Начать!</a>
                     </p>
-                </div>
+</div>
             </div>
         </div>
     }

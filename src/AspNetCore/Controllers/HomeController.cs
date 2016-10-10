@@ -19,7 +19,9 @@ namespace AspNetCore.Controllers
 
         public IActionResult Index()
         {
-            var model = _db.TestPackages.OrderBy(p=>p.TimeCreated).Include(p => p.User);
+            var model = _db.TestPackages.OrderBy(p=>p.TimeCreated)
+                .Include(p => p.User)
+                .Include(p=>p.TestItems);
             
             return View(model);
         }

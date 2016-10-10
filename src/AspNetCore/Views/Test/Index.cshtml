@@ -2,7 +2,7 @@
 
 @if (Model == null)
 {
-    <br/>
+    <br />
     <div class="alert alert-warning">
         <strong class="glyphicon glyphicon-warning-sign"></strong> У этого теста еще нет вопросов.
     </div>
@@ -13,19 +13,47 @@ else
 {
     <br />
     <br />
-    <div class="panel panel-primary">
-        <div class="panel-heading">
-            <div class="panel-info">
-                 @Model.TestPackage.Name <span class="glyphicon glyphicon-circle-arrow-right"></span>
-                <br/>
-                 <h3> @Model.Question</h3>
+    <h4>
+        @Model.TestPackage.Name <span class="glyphicon glyphicon-circle-arrow-right"></span>
+    </h4>
+
+    <form asp-action="Next">
+        <input type="hidden" value="@Model.TestItemId" name="questionId"/>
+        <input type="hidden" value="@Model.TestPackageId" name="gameId" />
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Вопрос @Model.Order</h3>
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div>
+                        @{
+                            var question = Model.Question.Split(new [] {"\r\n"}, StringSplitOptions.None);
+                            foreach (var line in question)
+                            {
+                                <b>
+                                    @line
+                                </b>
+                                <br />
+                            }
+                        }
+                        
+                    </div>
+                    <br />
+                    @if (!string.IsNullOrEmpty(Model.Remark))
+                {
+                        <div>
+                            @Model.Remark
+                        </div>
+                    }
+                    <br />
+                    <br />
+                    <input type="text" id="answer" name="answer" class="form-control" autofocus="true" />
+                </div>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" class="btn btn-success" value="Отправить" />
             </div>
         </div>
-        
-        <div class="panel-footer text-center">
-            <button type="button" class="btn btn-success btn-sm">
-                <span class="glyphicon glyphicon-ok"></span> <h4>Отправить</h4>
-            </button>
-        </div>
-    </div>
+    </form>
 }

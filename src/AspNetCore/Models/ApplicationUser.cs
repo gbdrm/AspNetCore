@@ -10,5 +10,7 @@ namespace AspNetCore.Models
         public virtual ICollection<TestPackage> TestPackages { get; set; }
 
         public virtual ICollection<TestResult> Testresults { get; set; }
+
+        public virtual ICollection<Answer> Answers { get; set; }
     }
 }

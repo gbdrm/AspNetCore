@@ -1,0 +1,48 @@
+﻿@model AspNetCore.Models.TestResult
+
+@{
+    ViewData["Title"] = "View";
+}
+
+<h4>Тест пройден</h4>
+
+<div class="form-horizontal">
+    <h2>@Model.TestPackage.Name</h2>
+    <hr />
+    <input type="hidden" asp-for="TestResultId" />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Score)
+        </dt>
+        <dd>
+            @(Model.Score * 100 + "%")
+        </dd>
+    </dl>
+
+    @{ var answers = ViewBag.Answers as IEnumerable<Answer>; }
+    @if (answers != null)
+    {
+        <dl class="dl-horizontal">
+            @foreach (var answer in answers)
+            {
+                <dt>
+                    @answer.TestItem.Question
+                </dt>
+                <dd>
+                    <span style="color: @(answer.IsCorrect ? "green" : "red")">
+                        @answer.Value
+                    </span>
+                </dd>
+            }
+        </dl>
+    }
+
+</div>
+
+<div>
+    <a asp-controller="Home" asp-action="Index">На главную</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

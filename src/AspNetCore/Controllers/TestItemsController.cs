@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -15,7 +16,7 @@ namespace AspNetCore.Controllers
     public class TestItemsController : Controller
     {
         private readonly ApplicationDbContext _context;
-
+        
         public TestItemsController(ApplicationDbContext context)
         {
             _context = context;
@@ -24,17 +25,18 @@ namespace AspNetCore.Controllers
         // GET: TestItems
         public async Task<IActionResult> Index(Guid? id)
         {
-            if (id == null)
+            IQueryable<TestItem> applicationDbContext = _context.TestItems;
+            if (id != null)
             {
-                var applicationDbContext = _context.TestItems.Include(t => t.TestPackage);
-                return View(await applicationDbContext.ToListAsync());
+                applicationDbContext = applicationDbContext.Where(p => p.TestPackageId == id);
             }
-            else
-            {
-                ViewData["ReturnUrl"] = "TestItems/Index/" + id; // TODO: Make it better
-                var applicationDbContext = _context.TestItems.Where(p => p.TestPackageId == id).Include(t => t.TestPackage);
-                return View(await applicationDbContext.ToListAsync());
-            }
+
+            var model = await applicationDbContext
+                .OrderBy(p=>p.Order)
+                .Include(t => t.TestPackage)
+                .ToListAsync();
+
+            return View(model);
         }
 
         // GET: TestItems/Details/5
@@ -57,7 +59,7 @@ namespace AspNetCore.Controllers
         // GET: TestItems/Create
         public IActionResult Create()
         {
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name");
+            ViewData["TestPackageId"] = new SelectList(GetTestPackages(), "TestPackageId", "Name");
             ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View();
         }
@@ -67,7 +69,7 @@ namespace AspNetCore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("TestItemId,Answer,Question,TestPackageId,TestType")] TestItem testItem)
+        public async Task<IActionResult> Create([Bind("TestItemId,Answer,Question,TestPackageId,TestType,Order,Remark")] TestItem testItem)
         {
             if (ModelState.IsValid)
             {
@@ -76,7 +78,7 @@ namespace AspNetCore.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Index");
             }
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name", testItem.TestPackageId);
+            ViewData["TestPackageId"] = new SelectList(GetTestPackages(), "TestPackageId", "Name", testItem.TestPackageId);
             ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View(testItem);
         }
@@ -94,7 +96,8 @@ namespace AspNetCore.Controllers
             {
                 return NotFound();
             }
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name", testItem.TestPackageId);
+            
+            ViewData["TestPackageId"] = new SelectList(GetTestPackages(), "TestPackageId", "Name", testItem.TestPackageId);
             ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View(testItem);
         }
@@ -104,7 +107,7 @@ namespace AspNetCore.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("TestItemId,Answer,Question,TestPackageId,TestType")] TestItem testItem)
+        public async Task<IActionResult> Edit(Guid id, [Bind("TestItemId,Answer,Question,TestPackageId,TestType,Order,Remark")] TestItem testItem)
         {
             if (id != testItem.TestItemId)
             {
@@ -131,9 +134,20 @@ namespace AspNetCore.Controllers
                 }
                 return RedirectToAction("Index");
             }
-            ViewData["TestPackageId"] = new SelectList(_context.TestPackages, "TestPackageId", "Name", testItem.TestPackageId);
+            ViewData["TestPackageId"] = new SelectList(GetTestPackages(), "TestPackageId", "Name", testItem.TestPackageId);
             ViewData["TestTypes"] = new SelectList(Enum.GetValues(typeof(TestType)).Cast<TestType>());
             return View(testItem);
+        }
+
+        private IQueryable<TestPackage> GetTestPackages()
+        {
+            Guid? userId = Helper.GetCurrentUserId(User);
+            if (userId.HasValue)
+            {
+                return _context.TestPackages.Where(p => p.UserId == userId.Value);
+            }
+
+            return null;
         }
 
         // GET: TestItems/Delete/5

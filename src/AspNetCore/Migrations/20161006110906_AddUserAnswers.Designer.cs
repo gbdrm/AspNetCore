@@ -8,9 +8,10 @@ using AspNetCore.Data;
 namespace AspNetCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161006110906_AddUserAnswers")]
+    partial class AddUserAnswers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
@@ -25,7 +26,7 @@ namespace AspNetCore.Migrations
 
                     b.Property<Guid>("TestItemId");
 
-                    b.Property<Guid?>("UserId");
+                    b.Property<Guid>("UserId");
 
                     b.Property<string>("Value");
 
@@ -288,8 +289,9 @@ namespace AspNetCore.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("AspNetCore.Models.ApplicationUser", "User")
-                        .WithMany("Answers")
-                        .HasForeignKey("UserId");
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("AspNetCore.Models.TestItem", b =>

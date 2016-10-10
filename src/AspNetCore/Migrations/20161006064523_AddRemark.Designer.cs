@@ -8,35 +8,14 @@ using AspNetCore.Data;
 namespace AspNetCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20161006064523_AddRemark")]
+    partial class AddRemark
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.0.1")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("AspNetCore.Models.Answer", b =>
-                {
-                    b.Property<Guid>("AnswerId")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("IsCorrect");
-
-                    b.Property<Guid>("TestItemId");
-
-                    b.Property<Guid?>("UserId");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("AnswerId");
-
-                    b.HasIndex("TestItemId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Answers");
-                });
 
             modelBuilder.Entity("AspNetCore.Models.ApplicationUser", b =>
                 {
@@ -93,13 +72,9 @@ namespace AspNetCore.Migrations
                     b.Property<Guid>("TestItemId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("Answer")
-                        .IsRequired();
+                    b.Property<string>("Answer");
 
-                    b.Property<int>("Order");
-
-                    b.Property<string>("Question")
-                        .IsRequired();
+                    b.Property<string>("Question");
 
                     b.Property<string>("Remark");
 
@@ -163,8 +138,7 @@ namespace AspNetCore.Migrations
 
                     b.Property<Guid>("TestPackageId");
 
-                    b.Property<Guid?>("UserId")
-                        .IsRequired();
+                    b.Property<Guid>("UserId");
 
                     b.HasKey("TestResultId");
 
@@ -278,18 +252,6 @@ namespace AspNetCore.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
-                });
-
-            modelBuilder.Entity("AspNetCore.Models.Answer", b =>
-                {
-                    b.HasOne("AspNetCore.Models.TestItem", "TestItem")
-                        .WithMany()
-                        .HasForeignKey("TestItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("AspNetCore.Models.ApplicationUser", "User")
-                        .WithMany("Answers")
-                        .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("AspNetCore.Models.TestItem", b =>

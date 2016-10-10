@@ -6,9 +6,12 @@
 
 <h2>Тесты</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (!Model.Any())
+{
+    <p>
+        <a asp-action="Create">Create New</a>
+    </p>
+}
 <p>
     @if (Model != null)
     {

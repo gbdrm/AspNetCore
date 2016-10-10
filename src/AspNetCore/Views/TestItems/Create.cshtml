@@ -1,4 +1,4 @@
-@model AspNetCore.Models.TestItem
+﻿@model AspNetCore.Models.TestItem
 
 @{
     ViewData["Title"] = "Create";
@@ -19,10 +19,25 @@
             </div>
         </div>
         <div class="form-group">
+            <label asp-for="Order" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Order" class="form-control"></input>
+                <span asp-validation-for="Order" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
             <label asp-for="Question" class="col-md-2 control-label"></label>
             <div class="col-md-10">
                 <textarea asp-for="Question" class="form-control"></textarea>
                 <span asp-validation-for="Question" class="text-danger" />
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Remark" class="col-md-2 control-label"></label>
+            <div class="col-md-10">
+                <input asp-for="Remark" class="form-control" />
+                <span class="text-info">В каком формате вводить ответ, например, Ответ - число</span>
+                <span asp-validation-for="Remark" class="text-danger" />
             </div>
         </div>
         <div class="form-group">

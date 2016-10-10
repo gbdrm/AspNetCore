@@ -24,9 +24,8 @@ namespace AspNetCore.Controllers
 
         public IActionResult Finished()
         {
-            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Guid userId;
-            if (Guid.TryParse(user, out userId))
+            Guid? userId = Helper.GetCurrentUserId(User);
+            if (userId.HasValue)
             {
                 var model = _context.TestResults.Where(r => r.UserId == userId);
                 return View(model.ToList());
@@ -37,11 +36,10 @@ namespace AspNetCore.Controllers
 
         public IActionResult Index()
         {
-            var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Guid userId;
-            if (Guid.TryParse(user, out userId))
+            Guid? userId = Helper.GetCurrentUserId(User);
+            if (userId.HasValue)
             {
-                var packages = _context.TestPackages.Where(r => r.UserId == userId);
+                var packages = _context.TestPackages.Where(r => r.UserId == userId.Value);
                 var model = GetPackagesModel(packages);
 
                 return View(model);
@@ -99,11 +97,10 @@ namespace AspNetCore.Controllers
             {
                 testPackage.TestPackageId = Guid.NewGuid();
                 testPackage.TimeCreated = DateTime.Now;
-                var user = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                Guid userId;
-                if (Guid.TryParse(user, out userId))
+                Guid? userId = Helper.GetCurrentUserId(User);
+                if (userId.HasValue)
                 {
-                    testPackage.UserId = userId;
+                    testPackage.UserId = userId.Value;
                 }
                 
                 _context.Add(testPackage);

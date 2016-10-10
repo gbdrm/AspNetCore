@@ -17,6 +17,7 @@ namespace AspNetCore.Data
         public DbSet<TestResult> TestResults { get; set; }
         public DbSet<TestItem> TestItems { get; set; }
         public DbSet<TestOption> TestOptions { get; set; }
+        public DbSet<Answer> Answers { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -25,6 +26,11 @@ namespace AspNetCore.Data
             .WithMany(b => b.Testresults)
             .IsRequired()
             .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Entity<Answer>()
+                .HasOne(a => a.User)
+                .WithMany(a => a.Answers)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(builder);
         }
