@@ -8,8 +8,8 @@ using AspNetCore.Data;
 namespace AspNetCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20161006111139_AddUserAnswers2")]
-    partial class AddUserAnswers2
+    [Migration("20161013064704_Main")]
+    partial class Main
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -160,7 +160,7 @@ namespace AspNetCore.Migrations
                     b.Property<Guid>("TestResultId")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int>("Score");
+                    b.Property<double>("Score");
 
                     b.Property<Guid>("TestPackageId");
 

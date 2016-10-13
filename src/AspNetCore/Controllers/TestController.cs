@@ -36,6 +36,7 @@ namespace AspNetCore.Controllers
             }
 
             var answerDb = _context.Answers.SingleOrDefault(a => a.UserId == userId && a.TestItemId == questionId);
+            var isCorrect = answer.ToLower() == current.Answer.ToLower();
             if (answerDb == null)
             {
                 _context.Add(new Answer
@@ -43,13 +44,13 @@ namespace AspNetCore.Controllers
                     Value = answer,
                     TestItemId = questionId,
                     UserId = userId,
-                    IsCorrect = answer.ToLower() == current.Answer
+                    IsCorrect = isCorrect
                 });
             }
             else
             {
                 answerDb.Value = answer;
-                answerDb.IsCorrect = answer.ToLower() == current.Answer;
+                answerDb.IsCorrect = isCorrect;
             }
 
             var nextQuestion = package.TestItems.OrderBy(i => i.Order)
@@ -83,7 +84,6 @@ namespace AspNetCore.Controllers
         public IActionResult Index(Guid? gameId = null)
         {
             var package = _context.TestPackages.Include(p => p.TestItems).SingleOrDefault(p => p.TestPackageId == gameId);
-
             return View(package.TestItems.OrderBy(p => p.Order).FirstOrDefault());
         }
 

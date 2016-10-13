@@ -4,10 +4,9 @@
     ViewData["Title"] = "Details";
 }
 
-<h2>Details</h2>
 
 <div>
-    <h4>TestPackage</h4>
+    <h3>@Model.Name</h3>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -22,18 +21,7 @@
         <dd>
             @Html.DisplayFor(model => model.TimeCreated)
         </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.UserId)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.UserId)
-        </dd>
-        <dt>
-            @Html.DisplayNameFor(model => model.Viewed)
-        </dt>
-        <dd>
-            @Html.DisplayFor(model => model.Viewed)
-        </dd>
+
     </dl>
 </div>
 <div>

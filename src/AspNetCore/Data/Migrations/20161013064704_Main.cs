@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace AspNetCore.Migrations
 {
-    public partial class Initial : Migration
+    public partial class Main : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -175,8 +175,10 @@ namespace AspNetCore.Migrations
                 columns: table => new
                 {
                     TestItemId = table.Column<Guid>(nullable: false),
-                    Answer = table.Column<string>(nullable: true),
-                    Question = table.Column<string>(nullable: true),
+                    Answer = table.Column<string>(nullable: false),
+                    Order = table.Column<int>(nullable: false),
+                    Question = table.Column<string>(nullable: false),
+                    Remark = table.Column<string>(nullable: true),
                     TestPackageId = table.Column<Guid>(nullable: false),
                     TestType = table.Column<int>(nullable: false)
                 },
@@ -196,7 +198,7 @@ namespace AspNetCore.Migrations
                 columns: table => new
                 {
                     TestResultId = table.Column<Guid>(nullable: false),
-                    Score = table.Column<int>(nullable: false),
+                    Score = table.Column<double>(nullable: false),
                     TestPackageId = table.Column<Guid>(nullable: false),
                     UserId = table.Column<Guid>(nullable: false)
                 },
@@ -211,6 +213,33 @@ namespace AspNetCore.Migrations
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_TestResults_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Answers",
+                columns: table => new
+                {
+                    AnswerId = table.Column<Guid>(nullable: false),
+                    IsCorrect = table.Column<bool>(nullable: false),
+                    TestItemId = table.Column<Guid>(nullable: false),
+                    UserId = table.Column<Guid>(nullable: true),
+                    Value = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Answers", x => x.AnswerId);
+                    table.ForeignKey(
+                        name: "FK_Answers_TestItems_TestItemId",
+                        column: x => x.TestItemId,
+                        principalTable: "TestItems",
+                        principalColumn: "TestItemId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Answers_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -235,6 +264,16 @@ namespace AspNetCore.Migrations
                         principalColumn: "TestItemId",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_TestItemId",
+                table: "Answers",
+                column: "TestItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Answers_UserId",
+                table: "Answers",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "EmailIndex",
@@ -305,6 +344,9 @@ namespace AspNetCore.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Answers");
+
             migrationBuilder.DropTable(
                 name: "TestOptions");
 
