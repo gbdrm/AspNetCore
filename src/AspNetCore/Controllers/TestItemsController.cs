@@ -25,7 +25,8 @@ namespace AspNetCore.Controllers
         // GET: TestItems
         public async Task<IActionResult> Index(Guid? id)
         {
-            IQueryable<TestItem> applicationDbContext = _context.TestItems;
+            Guid userId = Helper.GetCurrentUserId(User) ?? Guid.Empty;
+            IQueryable<TestItem> applicationDbContext = _context.TestItems.Where(i=>i.TestPackage.UserId == userId);
             if (id != null)
             {
                 applicationDbContext = applicationDbContext.Where(p => p.TestPackageId == id);
@@ -47,7 +48,9 @@ namespace AspNetCore.Controllers
                 return NotFound();
             }
 
-            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id);
+            Guid userId = Helper.GetCurrentUserId(User) ?? Guid.Empty;
+            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id && m.TestPackage.UserId == userId);
+
             if (testItem == null)
             {
                 return NotFound();
@@ -91,7 +94,8 @@ namespace AspNetCore.Controllers
                 return NotFound();
             }
 
-            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id);
+            Guid userId = Helper.GetCurrentUserId(User) ?? Guid.Empty;
+            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id && m.TestPackage.UserId == userId);
             if (testItem == null)
             {
                 return NotFound();
@@ -158,7 +162,8 @@ namespace AspNetCore.Controllers
                 return NotFound();
             }
 
-            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id);
+            Guid userId = Helper.GetCurrentUserId(User) ?? Guid.Empty;
+            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id && m.TestPackage.UserId == userId);
             if (testItem == null)
             {
                 return NotFound();
@@ -172,7 +177,8 @@ namespace AspNetCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id);
+            Guid userId = Helper.GetCurrentUserId(User) ?? Guid.Empty;
+            var testItem = await _context.TestItems.SingleOrDefaultAsync(m => m.TestItemId == id && m.TestPackage.UserId == userId);
             _context.TestItems.Remove(testItem);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");

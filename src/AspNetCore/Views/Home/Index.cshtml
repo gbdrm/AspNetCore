@@ -9,6 +9,13 @@
     <div class="row">
         <div class="col-lg-12">
             <h3>Все Тесты</h3>
+            @{ var userId = Helper.GetCurrentUserId(User) ?? Guid.Empty; }
+            @if (Model.All(p => p.UserId != userId))
+            {
+                <p>
+                    <a asp-controller="TestPackages" asp-action="Create">Создать свой тест</a>
+                </p>
+            }
         </div>
     </div>
     

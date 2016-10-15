@@ -59,26 +59,57 @@ namespace AspNetCore.Controllers
 
             if (nextQuestion == null)
             {
-                var allAnswers = _context.Answers
-                    .Where(a => a.UserId == userId && a.TestItem.TestPackageId == gameId)
-                    .Include(a => a.TestItem);
-                var correctAnswers = allAnswers.Where(a => a.IsCorrect);
-                double score = (double)correctAnswers.Count() / allAnswers.Count();
-
-                var finishModel = new TestResult
-                {
-                    TestPackageId = gameId,
-                    TestPackage = package,
-                    UserId = userId,
-                    Score = score,
-                };
-
-                ViewBag.Answers = allAnswers;
-
-                return View("Finish", finishModel);
+                return FinishPage(gameId, userId, package);
             }
 
             return View("Index", nextQuestion);
+        }
+
+        private IActionResult FinishPage(Guid gameId, Guid? userId, TestPackage package)
+        {
+            var allAnswers = _context.Answers
+                .Where(a => a.UserId == userId && a.TestItem.TestPackageId == gameId)
+                .Include(a => a.TestItem).ToList();
+            var correctAnswers = allAnswers.Where(a => a.IsCorrect);
+            double score = (double) correctAnswers.Count()/allAnswers.Count;
+
+            var finishModel = new TestResult
+            {
+                TestPackageId = gameId,
+                TestPackage = package,
+                UserId = userId,
+                Score = score,
+            };
+
+            //var comments = _context.Comments.Where(c => c.TestPackageId == gameId).Include(c => c.User).ToList();
+            //ViewBag.Comments = comments;
+            ViewBag.Answers = allAnswers;
+
+            return View("Finish", finishModel);
+        }
+
+        [HttpPost]
+        public IActionResult AddComment(Guid gameId, string commentText)
+        {
+            var currentUserId = Helper.GetCurrentUserId(User, Request.Cookies["userId"]);
+            if (!currentUserId.HasValue)
+            {
+                return BadRequest();
+            }
+
+            var comment = new Comment
+            {
+                TestPackageId = gameId,
+                Text = commentText,
+                Time = DateTime.Now,
+                UserId = currentUserId.Value
+            };
+
+            _context.Add(comment);
+            _context.SaveChanges();
+
+            var package = _context.TestPackages.Include(p => p.TestItems).SingleOrDefault(p => p.TestPackageId == gameId);
+            return FinishPage(gameId, currentUserId, package);
         }
 
         public IActionResult Index(Guid? gameId = null)

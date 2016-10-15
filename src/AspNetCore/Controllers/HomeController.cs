@@ -1,8 +1,5 @@
-﻿using System;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using AspNetCore.Data;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,22 +23,9 @@ namespace AspNetCore.Controllers
             return View(model);
         }
 
-        public IActionResult About()
-        {
-            ViewData["Message"] = "Your application description page.";
-
-            return View();
-        }
-
-        public IActionResult Contact()
-        {
-            ViewData["Message"] = "Your contact page.";
-
-            return View();
-        }
-
         public IActionResult Error()
         {
+            ViewBag.Exception = "Test";
             return View();
         }
     }

@@ -4,38 +4,101 @@
     ViewData["Title"] = "View";
 }
 
-<h4>Тест пройден</h4>
+<div class="form-horizontal container">
+    <div class="col-md-8">
+        @{
+            var answersIE = ViewBag.Answers as IEnumerable<Answer>;
+            var answers = answersIE.ToList();
+        }
+        @if (answers != null)
+        {
+            <div class="container">
+                <div style="text-align: center; max-width: 500px">
+                    <h2>@Model.TestPackage.Name</h2>
+                    <b>@answers.Count(a => a.IsCorrect)</b> из @answers.Count
+                    <p>
+                        <b>@(Model.Score * 100 + "%")</b>
+                    </p>
+                    @if (Model.Score >= 0.8)
+                    {
+                        <p>Отличный результат!</p>
+                    }
+                    else
+                    {
+                        <p>Можно было и лучше!</p>
+                    }
+                </div>
+                <div class="row" style="max-width:500px">
+                    <button class="btn btn-info" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                        Посмотреть ответы
+                    </button>
+                    <br />
+                    <br />
+                    <a href="~/test/index/?gameId=@Model.TestPackageId" class="btn btn-info ">Пройти еще раз</a>
+                </div>
+                <br /><br />
+                <div class="collapse col-md-5" id="collapseExample">
+                    <div class="card card-block">
+                        @{
+                            for (int i = 0; i < answers.Count; i++)
+                            {
+                                <div>
+                                    <b>@(i + 1).</b>
+                                    @answers[i].TestItem.Question
+                                    <p style="color: @(answers[i].IsCorrect ? "green" : "red")">
+                                        @if (string.IsNullOrEmpty(answers[i].Value))
+                                        {
+                                            <span>No answer</span>
+                                        }
+                                        else
+                                        {
+                                            <b>@answers[i].Value</b>
+                                        }
+                                    </p>
+                                </div>
+                                <hr />
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+                            }
+    </div>
 
-<div class="form-horizontal">
-    <h2>@Model.TestPackage.Name</h2>
-    <hr />
-    <input type="hidden" asp-for="TestResultId" />
-    <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.Score)
-        </dt>
-        <dd>
-            @(Model.Score * 100 + "%")
-        </dd>
-    </dl>
-
-    @{ var answers = ViewBag.Answers as IEnumerable<Answer>; }
-    @if (answers != null)
-    {
-        <dl class="dl-horizontal">
-            @foreach (var answer in answers)
+    <div class="col-md-8">
+        <h4>Комментарии</h4>
+        @{
+            var comments = ViewBag.Comments as IEnumerable<Comment>;
+        }
+        @if (comments != null)
+        {
+            foreach (var comment in comments)
             {
-                <dt>
-                    @answer.TestItem.Question
-                </dt>
-                <dd>
-                    <span style="color: @(answer.IsCorrect ? "green" : "red")">
-                        @answer.Value
-                    </span>
-                </dd>
+                <div class="panel panel-comment panel-default ">
+                    <div class="panel-heading-comment panel-heading">
+                        <strong>@(comment.User?.UserName ?? "Гость")</strong> @*<span class="text-muted">commented 5 days ago</span>*@
+                    </div>
+                    <div class="panel-body">
+                        @comment.Text
+                    </div>
+                </div>
             }
-        </dl>
-    }
+        }
+
+        <div class="panel-body">
+            <div class="form-group">
+                <form asp-controller="Test" asp-action="AddComment" method="post">
+                    <input type="hidden" name="gameId" value="@Model.TestPackageId" />
+                    <div class="input-group" style="max-width: 500px">
+                        <input type="text" id="commentText" name="commentText" class="form-control" />
+                        <span class="input-group-btn">
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 </div>
 

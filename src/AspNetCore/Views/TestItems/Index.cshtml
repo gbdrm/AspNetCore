@@ -12,9 +12,9 @@
 <table class="table">
     <thead>
         <tr>
-            @*<th>
-                @Html.DisplayNameFor(model => model.TestPackage.Name)
-            </th>*@
+            <th>
+                @Html.DisplayNameFor(model => model.Order)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Question)
             </th>
@@ -27,9 +27,9 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            @*<td>
-                @Html.DisplayFor(modelItem => item.TestPackage.Name)
-            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.Order)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Question)
             </td>

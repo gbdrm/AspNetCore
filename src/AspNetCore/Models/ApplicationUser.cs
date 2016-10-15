@@ -12,5 +12,7 @@ namespace AspNetCore.Models
         public virtual ICollection<TestResult> Testresults { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set; }
+
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

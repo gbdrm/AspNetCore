@@ -17,6 +17,8 @@ namespace AspNetCore.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        private Guid ThisUser => Helper.GetCurrentUserId(User) ?? Guid.Empty;
+
         public TestPackagesController(ApplicationDbContext context)
         {
             _context = context;    
@@ -39,7 +41,7 @@ namespace AspNetCore.Controllers
             Guid? userId = Helper.GetCurrentUserId(User);
             if (userId.HasValue)
             {
-                var packages = _context.TestPackages.Where(r => r.UserId == userId.Value);
+                var packages = _context.TestPackages.Where(r => r.UserId == userId.Value).ToList();
                 var model = GetPackagesModel(packages);
 
                 return View(model);
@@ -48,7 +50,7 @@ namespace AspNetCore.Controllers
             return View();
         }
 
-        private IEnumerable<TestPackagesViewModel> GetPackagesModel(IQueryable<TestPackage> packages)
+        private IEnumerable<TestPackagesViewModel> GetPackagesModel(IEnumerable<TestPackage> packages)
         {
             foreach (var testPackage in packages)
             {
@@ -71,7 +73,7 @@ namespace AspNetCore.Controllers
                 return NotFound();
             }
 
-            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id);
+            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id && m.UserId == ThisUser);
             if (testPackage == null)
             {
                 return NotFound();
@@ -118,7 +120,7 @@ namespace AspNetCore.Controllers
                 return NotFound();
             }
 
-            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id);
+            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id && m.UserId == ThisUser);
             if (testPackage == null)
             {
                 return NotFound();
@@ -133,7 +135,7 @@ namespace AspNetCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [Bind("TestPackageId,Name,Description")] TestPackage testPackage)
         {
-            if (id != testPackage.TestPackageId)
+            if (id != testPackage.TestPackageId && testPackage.UserId == ThisUser)
             {
                 return NotFound();
             }
@@ -171,7 +173,7 @@ namespace AspNetCore.Controllers
                 return NotFound();
             }
 
-            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id);
+            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id && m.UserId == ThisUser);
             if (testPackage == null)
             {
                 return NotFound();
@@ -185,7 +187,7 @@ namespace AspNetCore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id);
+            var testPackage = await _context.TestPackages.SingleOrDefaultAsync(m => m.TestPackageId == id && m.UserId == ThisUser);
             _context.TestPackages.Remove(testPackage);
             await _context.SaveChangesAsync();
             return RedirectToAction("Index");
